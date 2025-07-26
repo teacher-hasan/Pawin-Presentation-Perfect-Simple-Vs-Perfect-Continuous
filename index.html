@@ -176,7 +176,7 @@
         </div>
     </div>
 
-    <script>
+<script>
     const slideData = [
         { type: 'title', title: 'Understanding Perfect Tenses', subtitle: 'A Deep Dive into Perfect Simple vs. Perfect Continuous', text: 'Mastering the nuances of English time relationships' },
         { type: 'normal', title: 'Introduction: Time Relationships', text: 'Perfect and perfect continuous tenses are crucial for showing complex time relationships between actions. They each highlight different aspects of actions, such as completion, duration, or sequence.' },
@@ -200,20 +200,20 @@
         { type: 'quiz' }
     ];
 
-     const quizData = [
-            // Quiz Set 1
-            { question: "Which tense emphasizes the result of a past action on the present?", options: ["Past Simple", "Present Perfect", "Present Continuous"], answer: "Present Perfect", explanation: "The Present Perfect connects a past action to the present through its result." },
-            { question: "Choose the correct verb for a sequence of past events: 'The film _____ by the time we arrived.'", options: ["started", "had started", "has started"], answer: "had started", explanation: "Past Perfect ('had started') is for the action that happened first." },
-            // Quiz Set 2
-            { question: "Fill in the blank: 'By 2030, they _______ (build) the new airport.'", options: ["will build", "will have built", "will be building"], answer: "will have built", explanation: "Future Perfect is for an action completed before a future point." },
-            { question: "'I'm tired because I _______ (work) all day.' Which is best?", options: ["have worked", "had worked", "have been working"], answer: "have been working", explanation: "Present Perfect Continuous best explains the reason (duration of work) for a present result (tiredness)." },
-            // Quiz Set 3
-            { question: "'He looked exhausted. He _______ (travel) for 24 hours.'", options: ["had traveled", "has traveled", "had been traveling"], answer: "had been traveling", explanation: "Past Perfect Continuous emphasizes the duration of the traveling that led to a past result (exhaustion)." },
-            { question: "When are perfect and perfect continuous tenses often interchangeable?", options: ["With state verbs like 'know'", "For single, short actions", "With long-term action verbs like 'live' or 'work'"], answer: "With long-term action verbs like 'live' or 'work'", explanation: "With these verbs, the focus can be on either the result or the duration without much change in meaning." },
-            // Quiz Set 4
-            { question: "Which sentence is INCORRECT?", options: ["I've known him for years.", "I've been knowing him for years.", "She has been living here since 2010."], answer: "I've been knowing him for years.", explanation: "'Know' is a stative verb and is not used in continuous forms." },
-            { question: "To emphasize that a task is 100% COMPLETE, which is better?", options: ["I have written the report.", "I have been writing the report."], answer: "I have written the report.", explanation: "The simple form emphasizes completion, while the continuous form focuses on the activity itself." }
-        ];
+    const quizData = [
+        // Quiz Set 1
+        { question: "Which tense emphasizes the result of a past action on the present?", options: ["Past Simple", "Present Perfect", "Present Continuous"], answer: "Present Perfect", explanation: "The Present Perfect connects a past action to the present through its result." },
+        { question: "Choose the correct verb for a sequence of past events: 'The film _____ by the time we arrived.'", options: ["started", "had started", "has started"], answer: "had started", explanation: "Past Perfect ('had started') is for the action that happened first." },
+        // Quiz Set 2
+        { question: "Fill in the blank: 'By 2030, they _______ (build) the new airport.'", options: ["will build", "will have built", "will be building"], answer: "will have built", explanation: "Future Perfect is for an action completed before a future point." },
+        { question: "'I'm tired because I _______ (work) all day.' Which is best?", options: ["have worked", "had worked", "have been working"], answer: "have been working", explanation: "Present Perfect Continuous best explains the reason (duration of work) for a present result (tiredness)." },
+        // Quiz Set 3
+        { question: "'He looked exhausted. He _______ (travel) for 24 hours.'", options: ["had traveled", "has traveled", "had been traveling"], answer: "had been traveling", explanation: "Past Perfect Continuous emphasizes the duration of the traveling that led to a past result (exhaustion)." },
+        { question: "When are perfect and perfect continuous tenses often interchangeable?", options: ["With state verbs like 'know'", "For single, short actions", "With long-term action verbs like 'live' or 'work'"], answer: "With long-term action verbs like 'live' or 'work'", explanation: "With these verbs, the focus can be on either the result or the duration without much change in meaning." },
+        // Quiz Set 4
+        { question: "Which sentence is INCORRECT?", options: ["I've known him for years.", "I've been knowing him for years.", "She has been living here since 2010."], answer: "I've been knowing him for years.", explanation: "'Know' is a stative verb and is not used in continuous forms." },
+        { question: "To emphasize that a task is 100% COMPLETE, which is better?", options: ["I have written the report.", "I have been writing the report."], answer: "The simple form emphasizes completion, while the continuous form focuses on the activity itself." }
+    ];
 
     const slidesContainer = document.getElementById('slides-container');
     const prevBtn = document.getElementById('prevBtn');
@@ -226,8 +226,9 @@
     const quizNextBtn = document.getElementById('quizNextBtn');
 
     let currentSlideIndex = 0;
-    let quizSetIndex = 0;
+    let quizSetCounter = 0;
     let currentQuizQuestionIndex = 0;
+    let questionsForCurrentSet = [];
 
     function createSlideHTML(slide) {
         let content = '';
@@ -240,13 +241,13 @@
             content = `<h2>${slide.title}</h2><p>${slide.intro}</p><ul class="list-disc">${items}</ul>`;
         } else if (slide.type === 'example') {
             const examples = slide.examples.map(ex => `<p class="mb-2">${ex}</p>`).join('');
-            content = `<h2>${slide.title} <span class="text-lg text-slate-400 font-normal">${slide.structure}</span></h2><p>${slide.text}</p><div class="example">${examples}</div>`;
+            content = `<h2>${slide.title} <span class="text-lg text-slate-400 font-normal">${slide.structure || ''}</span></h2><p>${slide.text}</p><div class="example">${examples}</div>`;
         } else if (slide.type === 'key-idea') {
              content = `<h2>${slide.title}</h2><div class="p-6 rounded-lg bg-slate-800 border border-slate-700 mt-4"><p class="text-xl font-bold text-amber-300">${slide.text}</p></div>`;
         } else if (slide.type === 'table') {
             const headers = slide.headers.map(h => `<th>${h}</th>`).join('');
             const rows = slide.rows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('');
-            content = `<h2>${slide.title}</h2><p>${slide.subtitle}</p><table class="w-full text-left mt-4 border-collapse"><thead class="bg-slate-800"><tr>${headers}</tr></thead><tbody class="divide-y divide-slate-700">${rows}</tbody></table><p class="text-sm mt-2 text-slate-400">${slide.footer || ''}</p>`;
+            content = `<h2>${slide.title}</h2><p class="mb-2">${slide.subtitle || ''}</p><table class="w-full text-left mt-4 border-collapse"><thead class="bg-slate-800"><tr>${headers}</tr></thead><tbody class="divide-y divide-slate-700">${rows}</tbody></table><p class="text-sm mt-2 text-slate-400">${slide.footer || ''}</p>`;
         } else if (slide.type === 'quiz') {
             content = `<h2 class="text-amber-400">Time for a Quick Quiz!</h2><p>Let's test your understanding.</p><button class="nav-button mt-8" onclick="startQuiz()">Start Quiz</button>`;
         }
@@ -269,29 +270,25 @@
     }
 
     function startQuiz() {
-        const questionsForThisSet = quizData.slice(quizSetIndex * 2, (quizSetIndex + 1) * 2);
+        questionsForCurrentSet = quizData.slice(quizSetCounter * 2, (quizSetCounter + 1) * 2);
         currentQuizQuestionIndex = 0;
-        
-        function displayQuestion() {
-            if (currentQuizQuestionIndex >= questionsForThisSet.length) {
-                quizOverlay.classList.remove('active');
-                quizSetIndex++; // Move to the next set of questions for the next quiz
-                return;
-            }
-            const q = questionsForThisSet[currentQuizQuestionIndex];
-            quizQuestionEl.textContent = q.question;
-            quizOptionsEl.innerHTML = q.options.map(opt => `<button>${opt}</button>`).join('');
-            quizFeedbackEl.textContent = '';
-            quizFeedbackEl.className = 'quiz-feedback';
-            quizNextBtn.style.visibility = 'hidden';
-            
-            quizOptionsEl.querySelectorAll('button').forEach(btn => {
-                btn.onclick = () => checkAnswer(btn, q);
-            });
-        }
-        
         quizOverlay.classList.add('active');
-        displayQuestion();
+        displayCurrentQuizQuestion();
+    }
+    
+    function displayCurrentQuizQuestion() {
+        const q = questionsForCurrentSet[currentQuizQuestionIndex];
+        quizQuestionEl.textContent = q.question;
+        quizOptionsEl.innerHTML = q.options.map(opt => `<button>${opt}</button>`).join('');
+        quizFeedbackEl.textContent = '';
+        quizFeedbackEl.className = 'quiz-feedback';
+        quizNextBtn.style.visibility = 'hidden';
+        
+        quizOptionsEl.querySelectorAll('button').forEach(btn => {
+            btn.disabled = false;
+            btn.className = '';
+            btn.onclick = () => checkAnswer(btn, q);
+        });
     }
     
     function checkAnswer(selectedButton, question) {
@@ -315,21 +312,11 @@
 
     quizNextBtn.onclick = () => {
         currentQuizQuestionIndex++;
-        const questionsForThisSet = quizData.slice(quizSetIndex * 2, (quizSetIndex + 1) * 2);
-        if (currentQuizQuestionIndex < questionsForThisSet.length) {
-             // Delay for user to read feedback before next question
-            setTimeout(() => {
-                quizQuestionEl.textContent = '';
-                quizOptionsEl.innerHTML = '';
-                quizFeedbackEl.textContent = '';
-                quizFeedbackEl.className = 'quiz-feedback';
-                
-                // Then show next question after a brief pause
-                setTimeout(() => startQuiz(), 100);
-            }, 500);
+        if (currentQuizQuestionIndex < questionsForCurrentSet.length) {
+            displayCurrentQuizQuestion();
         } else {
-             quizOverlay.classList.remove('active');
-             quizSetIndex++; // Move to the next set
+            quizOverlay.classList.remove('active');
+            quizSetCounter++; // Only increment here, after a set is fully completed
         }
     };
 
@@ -345,6 +332,6 @@
 
     renderSlides();
 
-    </script>
+</script>
 </body>
 </html>
