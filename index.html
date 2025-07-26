@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfect Tenses Presentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Kanit:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #020617;
+            --card-bg: rgba(30, 41, 59, 0.5);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --gradient-start: #38bdf8;
+            --gradient-end: #a78bfa;
+            --accent-purple: #c084fc;
+            --accent-orange: #fb923c;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', 'Kanit', sans-serif;
+            background-color: var(--dark-bg);
+            background-image: radial-gradient(circle at 1px 1px, #1e293b 1px, transparent 0);
+            background-size: 20px 20px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        .gradient-text {
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .slides-container {
+            position: relative;
+            min-height: 500px;
+        }
+        .slide {
+            padding: 2rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+            transform: translateY(20px);
+        }
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .slide h1 { font-size: 2.8rem; font-weight: 900; }
+        .slide h2 { font-size: 2.2rem; font-weight: 700; color: var(--accent-purple); margin-bottom: 1rem; }
+        .slide h3 { font-size: 1.5rem; font-weight: 700; color: var(--accent-orange); margin-bottom: 1rem; }
+        .slide p { font-size: 1.125rem; line-height: 1.75; max-width: 650px; }
+        .slide ul { list-style-position: inside; text-align: left; max-width: 550px; margin-top: 1rem;}
+        .slide .example {
+            background-color: #0f172a;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-top: 1.5rem;
+            width: 100%;
+            max-width: 600px;
+            text-align: left;
+            border-left: 4px solid var(--gradient-start);
+        }
+        .navigation {
+            padding: 1rem 2.5rem;
+            background: rgba(15, 23, 42, 0.5);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-button {
+            background-color: #334155;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #475569;
+        }
+        .nav-button:not(:disabled):hover {
+            background-color: #475569;
+            transform: translateY(-2px);
+        }
+        .nav-button:disabled { background-color: #1e293b; cursor: not-allowed; color: #475569; }
+
+        /* Quiz Styles */
+        .quiz-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex; justify-content: center; align-items: center; z-index: 1000;
+            opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .quiz-overlay.active { opacity: 1; visibility: visible; }
+        .quiz-modal {
+            background: var(--card-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color); padding: 2.5rem; border-radius: 1.5rem;
+            width: 90%; max-width: 600px; text-align: center;
+            transform: scale(0.95); transition: transform 0.3s ease;
+        }
+        .quiz-overlay.active .quiz-modal { transform: scale(1); }
+        .quiz-modal h3 { color: var(--accent-orange); font-size: 1.75rem; margin-bottom: 1.5rem; }
+        .quiz-options button {
+            display: block; width: 100%; padding: 0.75rem; margin-bottom: 0.75rem;
+            background-color: #334155; border: 1px solid #475569; border-radius: 0.5rem;
+            font-size: 1rem; cursor: pointer; transition: all 0.2s ease;
+        }
+        .quiz-options button:not(:disabled):hover { background-color: #475569; border-color: var(--gradient-start); }
+        .quiz-options button.correct { background-color: var(--accent-green); border-color: var(--accent-green); color: #020617; font-weight: 700; }
+        .quiz-options button.incorrect { background-color: var(--accent-red); border-color: var(--accent-red); color: white; }
+        .quiz-feedback { margin-top: 1.5rem; font-size: 1.1rem; font-weight: 600; min-height: 50px; }
+        .quiz-feedback.correct { color: var(--accent-green); }
+        .quiz-feedback.incorrect { color: var(--accent-red); }
+        #quizNextBtn {
+            background-image: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 700;
+            cursor: pointer; transition: all 0.3s ease; border: none; margin-top: 1rem;
+            visibility: hidden;
+        }
+        #quizNextBtn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2); }
+
+    </style>
+</head>
+<body>
+
+    <div class="glass-card">
+        <div id="slides-container" class="slides-container">
+            <!-- Slides will be injected by JS -->
+        </div>
+        <div class="navigation">
+            <button id="prevBtn" class="nav-button">Previous</button>
+            <span id="slideCounter" class="text-lg font-semibold text-slate-400"></span>
+            <button id="nextBtn" class="nav-button">Next</button>
+        </div>
+    </div>
+
+    <!-- Quiz Overlay -->
+    <div id="quizOverlay" class="quiz-overlay">
+        <div class="quiz-modal">
+            <h3 id="quizQuestion"></h3>
+            <div id="quizOptions" class="quiz-options"></div>
+            <p id="quizFeedback" class="quiz-feedback"></p>
+            <button id="quizNextBtn">Continue</button>
+        </div>
+    </div>
+
+    <script>
+    const slideData = [
+        { type: 'title', title: 'Understanding Perfect Tenses', subtitle: 'A Deep Dive into Perfect Simple vs. Perfect Continuous', text: 'Mastering the nuances of English time relationships' },
+        { type: 'normal', title: 'Introduction: Time Relationships', text: 'Perfect and perfect continuous tenses are crucial for showing complex time relationships between actions. They each highlight different aspects of actions, such as completion, duration, or sequence.' },
+        { type: 'list', title: '🔵 The Perfect Simple Tenses', intro: 'Use these tenses when you want to emphasize:', items: ['The result or effect of a past action on the present.', 'Life experiences or unspecified time before now.', 'One past action that happened before another past action.', 'A future action that will be completed before a specific point in the future.'] },
+        { type: 'example', title: 'Present Perfect', structure: '(have/has + past participle)', text: 'Emphasizes a result or effect of a past action on the present, or an unspecified time before now.', examples: ["I’ve finished my homework. (The homework is done now - result)", "She has visited Japan. (A life experience, time unspecified)"] },
+        { type: 'example', title: 'Past Perfect', structure: '(had + past participle)', text: 'Used for one past action that happened *before* another past action. This helps establish a clear sequence of events in the past.', examples: ["She had left before I arrived. (Her leaving happened first, then my arrival)"] },
+        { type: 'quiz' },
+        { type: 'example', title: 'Future Perfect', structure: '(will have + past participle)', text: 'Describes a future action that will be completed *before* a specific point in the future. It projects completion into the future.', examples: ["By next week, I will have finished the report. (The report will be done before next week)"] },
+        { type: 'key-idea', title: '💡 Key Idea: Perfect Tenses', text: 'Perfect tenses primarily show **completion** or the **time order of events**. They focus on the state resulting from an action, or when an action occurred relative to another.' },
+        { type: 'list', title: '🟣 The Perfect Continuous Tenses', intro: 'Use these tenses when you want to emphasize:', items: ['An action that started in the past and is still ongoing or just stopped.', 'The <strong>duration</strong> or <strong>process</strong> of the action.', 'An ongoing action in the past before another past action.', 'How long something will have been happening up to a point in the future.'] },
+        { type: 'example', title: 'Present Perfect Continuous', structure: '(have/has been + -ing)', text: 'Highlights an action that started in the past and is still ongoing or just stopped, focusing on duration.', examples: ["I’ve been studying for 3 hours. (Emphasis on the ongoing activity and its length)", "She’s been working here since 2020. (The work is continuous from 2020 until now)"] },
+        { type: 'quiz' },
+        { type: 'example', title: 'Past Perfect Continuous', structure: '(had been + -ing)', text: 'Describes an ongoing action in the past that continued up to or just before another past action. Focuses on the duration or process leading up to a past event.', examples: ["He had been waiting for 2 hours before the bus came. (The waiting was continuous for a duration before the bus arrived)"] },
+        { type: 'example', title: 'Future Perfect Continuous', structure: '(will have been + -ing)', text: 'Indicates how long something will have been happening up to a specific point in the future. Projects continuous duration into the future.', examples: ["By next year, I will have been living here for a decade. (The living will have continued for 10 years by next year)"] },
+        { type: 'key-idea', title: '💡 Key Idea: Perfect Continuous Tenses', text: 'Perfect continuous tenses highlight <strong>ongoing duration</strong> and <strong>continuity</strong> of the action. They emphasize the activity itself and how long it has been, had been, or will have been in progress.' },
+        { type: 'normal', title: '🟡 When Can They Be Used Interchangeably?', text: 'There are situations where both perfect and perfect continuous tenses can be used, though often with a subtle shift in focus. This usually occurs when the action is long-term, and both duration and result are relevant.' },
+        { type: 'quiz' },
+        { type: 'table', title: 'Interchangeability: Ongoing Actions', subtitle: 'Actions that started in the past and are still happening:', headers: ['Present Perfect', 'Present Perfect Continuous', 'Notes'], rows: [ ["I’ve lived here for 10 years.", "I’ve been living here for 10 years.", "✅ Both are common. Perfect: fact/result; Continuous: activity/duration"], ["She has worked here since 2015.", "She has been working here since 2015.", "✅ Same meaning in most conversations"] ], footer: 'Key verbs: <em>live, work, teach, study, play, wait, stay</em>' },
+        { type: 'table', title: 'Interchangeability: Recently Stopped', subtitle: 'Actions that just stopped but left a clear result:', headers: ['Present Perfect', 'Present Perfect Continuous', 'Notes'], rows: [ ["He’s painted the walls.", "He’s been painting the walls.", "✅ Both work. Perfect: result (walls are painted); Continuous: duration (he was actively doing it)"], ["I’ve read that book.", "I’ve been reading that book.", "✅ Perfect = you finished it; Continuous = maybe still reading"] ], footer: '👉 If the action is clearly completed, present perfect is preferred.' },
+        { type: 'table', title: 'Interchangeability: Past & Future', subtitle: 'Past actions before another past action (with "for" or "since"):', headers: ['Past Perfect', 'Past Perfect Continuous', 'Notes'], rows: [ ["She had lived there for years before she moved.", "She had been living there for years before she moved.", "✅ Nearly the same meaning."] ] },
+        { type: 'quiz' }
+    ];
+
+     const quizData = [
+            // Quiz Set 1
+            { question: "Which tense emphasizes the result of a past action on the present?", options: ["Past Simple", "Present Perfect", "Present Continuous"], answer: "Present Perfect", explanation: "The Present Perfect connects a past action to the present through its result." },
+            { question: "Choose the correct verb for a sequence of past events: 'The film _____ by the time we arrived.'", options: ["started", "had started", "has started"], answer: "had started", explanation: "Past Perfect ('had started') is for the action that happened first." },
+            // Quiz Set 2
+            { question: "Fill in the blank: 'By 2030, they _______ (build) the new airport.'", options: ["will build", "will have built", "will be building"], answer: "will have built", explanation: "Future Perfect is for an action completed before a future point." },
+            { question: "'I'm tired because I _______ (work) all day.' Which is best?", options: ["have worked", "had worked", "have been working"], answer: "have been working", explanation: "Present Perfect Continuous best explains the reason (duration of work) for a present result (tiredness)." },
+            // Quiz Set 3
+            { question: "'He looked exhausted. He _______ (travel) for 24 hours.'", options: ["had traveled", "has traveled", "had been traveling"], answer: "had been traveling", explanation: "Past Perfect Continuous emphasizes the duration of the traveling that led to a past result (exhaustion)." },
+            { question: "When are perfect and perfect continuous tenses often interchangeable?", options: ["With state verbs like 'know'", "For single, short actions", "With long-term action verbs like 'live' or 'work'"], answer: "With long-term action verbs like 'live' or 'work'", explanation: "With these verbs, the focus can be on either the result or the duration without much change in meaning." },
+            // Quiz Set 4
+            { question: "Which sentence is INCORRECT?", options: ["I've known him for years.", "I've been knowing him for years.", "She has been living here since 2010."], answer: "I've been knowing him for years.", explanation: "'Know' is a stative verb and is not used in continuous forms." },
+            { question: "To emphasize that a task is 100% COMPLETE, which is better?", options: ["I have written the report.", "I have been writing the report."], answer: "I have written the report.", explanation: "The simple form emphasizes completion, while the continuous form focuses on the activity itself." }
+        ];
+
+    const slidesContainer = document.getElementById('slides-container');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const slideCounter = document.getElementById('slideCounter');
+    const quizOverlay = document.getElementById('quizOverlay');
+    const quizQuestionEl = document.getElementById('quizQuestion');
+    const quizOptionsEl = document.getElementById('quizOptions');
+    const quizFeedbackEl = document.getElementById('quizFeedback');
+    const quizNextBtn = document.getElementById('quizNextBtn');
+
+    let currentSlideIndex = 0;
+    let quizSetIndex = 0;
+    let currentQuizQuestionIndex = 0;
+
+    function createSlideHTML(slide) {
+        let content = '';
+        if (slide.type === 'title') {
+            content = `<h1 class="gradient-text">${slide.title}</h1><h2 class="text-2xl mt-4 text-slate-300">${slide.subtitle}</h2><p class="mt-4 text-slate-400">${slide.text}</p>`;
+        } else if (slide.type === 'normal') {
+            content = `<h2>${slide.title}</h2><p>${slide.text}</p>`;
+        } else if (slide.type === 'list') {
+            const items = slide.items.map(item => `<li>${item}</li>`).join('');
+            content = `<h2>${slide.title}</h2><p>${slide.intro}</p><ul class="list-disc">${items}</ul>`;
+        } else if (slide.type === 'example') {
+            const examples = slide.examples.map(ex => `<p class="mb-2">${ex}</p>`).join('');
+            content = `<h2>${slide.title} <span class="text-lg text-slate-400 font-normal">${slide.structure}</span></h2><p>${slide.text}</p><div class="example">${examples}</div>`;
+        } else if (slide.type === 'key-idea') {
+             content = `<h2>${slide.title}</h2><div class="p-6 rounded-lg bg-slate-800 border border-slate-700 mt-4"><p class="text-xl font-bold text-amber-300">${slide.text}</p></div>`;
+        } else if (slide.type === 'table') {
+            const headers = slide.headers.map(h => `<th>${h}</th>`).join('');
+            const rows = slide.rows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('');
+            content = `<h2>${slide.title}</h2><p>${slide.subtitle}</p><table class="w-full text-left mt-4 border-collapse"><thead class="bg-slate-800"><tr>${headers}</tr></thead><tbody class="divide-y divide-slate-700">${rows}</tbody></table><p class="text-sm mt-2 text-slate-400">${slide.footer || ''}</p>`;
+        } else if (slide.type === 'quiz') {
+            content = `<h2 class="text-amber-400">Time for a Quick Quiz!</h2><p>Let's test your understanding.</p><button class="nav-button mt-8" onclick="startQuiz()">Start Quiz</button>`;
+        }
+        return `<div class="slide">${content}</div>`;
+    }
+    
+    function renderSlides() {
+        slidesContainer.innerHTML = slideData.map(createSlideHTML).join('');
+        showSlide(0);
+    }
+    
+    function showSlide(index) {
+        document.querySelectorAll('.slide').forEach((slide, i) => {
+            slide.classList.toggle('active', i === index);
+        });
+        currentSlideIndex = index;
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === slideData.length - 1;
+        slideCounter.textContent = `${index + 1} / ${slideData.length}`;
+    }
+
+    function startQuiz() {
+        const questionsForThisSet = quizData.slice(quizSetIndex * 2, (quizSetIndex + 1) * 2);
+        currentQuizQuestionIndex = 0;
+        
+        function displayQuestion() {
+            if (currentQuizQuestionIndex >= questionsForThisSet.length) {
+                quizOverlay.classList.remove('active');
+                quizSetIndex++; // Move to the next set of questions for the next quiz
+                return;
+            }
+            const q = questionsForThisSet[currentQuizQuestionIndex];
+            quizQuestionEl.textContent = q.question;
+            quizOptionsEl.innerHTML = q.options.map(opt => `<button>${opt}</button>`).join('');
+            quizFeedbackEl.textContent = '';
+            quizFeedbackEl.className = 'quiz-feedback';
+            quizNextBtn.style.visibility = 'hidden';
+            
+            quizOptionsEl.querySelectorAll('button').forEach(btn => {
+                btn.onclick = () => checkAnswer(btn, q);
+            });
+        }
+        
+        quizOverlay.classList.add('active');
+        displayQuestion();
+    }
+    
+    function checkAnswer(selectedButton, question) {
+        const isCorrect = selectedButton.textContent === question.answer;
+        
+        quizOptionsEl.querySelectorAll('button').forEach(btn => {
+            btn.disabled = true;
+            if (btn.textContent === question.answer) {
+                btn.classList.add('correct');
+            }
+        });
+        
+        if (!isCorrect) {
+            selectedButton.classList.add('incorrect');
+        }
+
+        quizFeedbackEl.textContent = question.explanation;
+        quizFeedbackEl.classList.add(isCorrect ? 'correct' : 'incorrect');
+        quizNextBtn.style.visibility = 'visible';
+    }
+
+    quizNextBtn.onclick = () => {
+        currentQuizQuestionIndex++;
+        const questionsForThisSet = quizData.slice(quizSetIndex * 2, (quizSetIndex + 1) * 2);
+        if (currentQuizQuestionIndex < questionsForThisSet.length) {
+             // Delay for user to read feedback before next question
+            setTimeout(() => {
+                quizQuestionEl.textContent = '';
+                quizOptionsEl.innerHTML = '';
+                quizFeedbackEl.textContent = '';
+                quizFeedbackEl.className = 'quiz-feedback';
+                
+                // Then show next question after a brief pause
+                setTimeout(() => startQuiz(), 100);
+            }, 500);
+        } else {
+             quizOverlay.classList.remove('active');
+             quizSetIndex++; // Move to the next set
+        }
+    };
+
+    prevBtn.onclick = () => showSlide(currentSlideIndex - 1);
+    nextBtn.onclick = () => showSlide(currentSlideIndex + 1);
+
+    document.addEventListener('keydown', (e) => {
+        if (!quizOverlay.classList.contains('active')) {
+            if (e.key === 'ArrowRight' && !nextBtn.disabled) showSlide(currentSlideIndex + 1);
+            if (e.key === 'ArrowLeft' && !prevBtn.disabled) showSlide(currentSlideIndex - 1);
+        }
+    });
+
+    renderSlides();
+
+    </script>
+</body>
+</html>
